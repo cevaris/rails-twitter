@@ -1,28 +1,9 @@
-== README
+== Rails Events
+Event collection backed by Redis.
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+=== Getting started
+- Start your Redis server locally in a new console
+- Start your Rails server locally in a new console
+- Execute `rake events:tail['events:raw']` in a new console
+- Create new `.credentials.json` file using the `.example.credentials.json` template and fill in with your Twitter info
+- Execute `rake events:create` in a new console to start the event creation process
