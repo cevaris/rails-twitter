@@ -11,18 +11,18 @@ class RedisEvents
     @queue.push(messages)
   end
 
-  def start(redis, channel)
+  def start(channel)
+    @redis = Redis.new(Rq::Application.config.redis)
     Thread.new do
-      while batch = @queue.pop
-        puts "Publishing #{batch.size} messages"
-        redis.pipelined do
-          batch.each do |message|
-            # puts "RedisEvent - #{message}"
-            redis.rpush(channel, message)
-            # producer.push(Kafka::Message.new(message))
-          end
+
+      loop do
+        batch = @queue.pop
+        batch.each do |message|
+          # puts "RedisEvent - #{message}"
+          result = @redis.rpush(channel, message)
         end
       end
+
     end
 
   end

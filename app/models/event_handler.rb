@@ -9,6 +9,8 @@ class EventHandler
   end
 
   def flush
-    @logger.write(@messages) if @messages.present?
+    if @messages.present?
+      @logger.write(@messages) 
+    end
   end
 end
