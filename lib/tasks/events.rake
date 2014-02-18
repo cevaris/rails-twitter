@@ -1,24 +1,26 @@
-require 'kafka'
+# require 'kafka'
 require 'securerandom'
 require 'tweetstream'
 
 require 'net/http'
 require 'net/https'
 
+require "redis"
+require "json"
+
 
 namespace :events do
-  desc "Tail from the Kafka log file"
-  task :tail, [:topic] => :environment do |task, args|
-    topic    = args[:topic].to_s
-    consumer = Kafka::Consumer.new(topic: topic)
+  desc "Tail from the Redis Pub/Sub"
+  task :tail, [:channel] => :environment do |task, args|
+    channel    = args[:channel].to_s
+    redis = Redis.new(:host => 'localhost', :port => 6379, :db => 15, :thread_safe => true)
 
-    puts "==> #{topic} <=="
+    puts "==> #{channel} <=="
 
-    consumer.loop do |messages|
-      messages.each do |message|
-        json = JSON.parse(message.payload)
+    redis.subscribe(channel) do |on|
+      on.message do |channel, message|
+        json = JSON.parse(message)
         puts json
-        # puts JSON.pretty_generate(json), "\n"
       end
     end
   end
@@ -26,7 +28,7 @@ namespace :events do
   task :create => :environment do
 
     creds = JSON.parse(File.read("#{Rails.root}/.credentials.json"))
-    
+
     TweetStream.configure do |config|
       config.consumer_key       = creds['consumer_key']
       config.consumer_secret    = creds['consumer_secret']
