@@ -17,12 +17,12 @@ namespace :events do
 
     puts "==> #{channel} <=="
 
-    redis.subscribe(channel) do |on|
-      on.message do |channel, message|
-        json = JSON.parse(message)
-        puts json
-      end
+    loop do
+      list, message = redis.blpop(channel)
+      json = JSON.parse(message)
+      puts json
     end
+
   end
 
   task :create => :environment do

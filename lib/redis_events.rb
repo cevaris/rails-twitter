@@ -18,7 +18,7 @@ class RedisEvents
         redis.pipelined do
           batch.each do |message|
             # puts "RedisEvent - #{message}"
-            redis.publish(channel, message)
+            redis.rpush(channel, message)
             # producer.push(Kafka::Message.new(message))
           end
         end
