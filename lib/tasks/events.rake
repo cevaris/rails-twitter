@@ -1,4 +1,3 @@
-# require 'kafka'
 require 'securerandom'
 require 'tweetstream'
 
@@ -13,7 +12,7 @@ namespace :events do
   desc "Tail from the Redis Pub/Sub"
   task :tail, [:channel] => :environment do |task, args|
     channel    = args[:channel].to_s
-    redis = Redis.new(:host => 'localhost', :port => 6379, :db => 15, :thread_safe => true)
+    redis = Redis.new(Rq::Application.config.redis)
 
     puts "==> #{channel} <=="
 
@@ -40,11 +39,8 @@ namespace :events do
     uri = URI.parse("http://localhost:3000/events")
 
     TweetStream::Client.new.sample do |status|
-      
       # puts "#{status.text}"
-
       Net::HTTP.post_form(uri, {event: status.to_json})
-
     end
   end
 end
