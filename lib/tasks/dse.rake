@@ -10,19 +10,10 @@ namespace :dse do
 
       rpig = RPig.new({ 
         local_script_path: "#{Rails.root}/scripts/pig/tweet-json.pig",
-        execute: 'mapreduce'
       })
       puts rpig.inspect
-
-
       rpig.execute()
 
-
-
-
-      
-
-      
 
 
       # args = { id: 'fake', dd: rand(10000) }
