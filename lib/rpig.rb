@@ -4,18 +4,13 @@ class RPig
   def initialize(options={})
 
     @username = 'vagrant'
-    @remote_script_location = '/pig/dev'
+    @remote_script_path = '/deployment/pig/scripts/'
     @host = '192.168.3.100'
-    @execute = 'local'
+    @execute = 'mapreduce'
 
     options.each { |k,v| instance_variable_set("@#{k}", v) }  
     check_preconditions()  
 
-  end
-
-  def pig_path()
-    # /pig/dev or /pig/production
-    "/pig/#{@remote_script_location}/"
   end
 
   def username_host
@@ -25,15 +20,15 @@ class RPig
 
   def push_file()
     # scp <PIG_SCRIPT_FILE> <REMOTE_LOCATION>:<PIG_SCRIPT_LOCATION>
-    command = "scp #{@local_script_location} #{username_host()}:#{pig_path()}"
+    command = "scp #{@local_script_path} #{username_host()}:#{@remote_script_path}"
     puts command
     puts `#{command}`
   end
 
   def pig_command()
-    if @local_script_location
+    if @local_script_path
       # dse pig -x <EXECUTION_TYPE> -f <PIG_SCRIPT_FILE>
-      "dse pig -x #{@execute} -f #{pig_path()}#{File.basename(@local_script_location)}"
+      "dse pig -x #{@execute} -f #{@remote_script_path}#{File.basename(@local_script_path)}"
     elsif 
       fail "Pig script file is missing"
     end
@@ -56,7 +51,8 @@ class RPig
 
 
   def check_preconditions()
-    fail "Pig Script file missing" if @local_script_location.nil?
+    fail "Pig Script file missing" if @local_script_path.nil?
+    fail "Pig Script file not found: #{@local_script_path}" unless File.exist?(@local_script_path)
     fail "Username missing" if @username.nil?
   end
 
@@ -79,9 +75,9 @@ end
 #       @execute = value.strip().downcase 
 #     end
 
-#     @remote_script_location = 'dev'
+#     @remote_script_path = 'dev'
 #     opts.on( '-e', '--environment [dev|prod]', 'Store pig script in developer or production environment' ) do |value|
-#       @remote_script_location = value.strip().downcase 
+#       @remote_script_path = value.strip().downcase 
 #     end
 
 #     @host = 'epic-n100.int.colorado.edu'
@@ -95,7 +91,7 @@ end
 #     end
 
 #     opts.on( '-f', '--file [PIG_FILE]', 'Location to Pig script file' ) do |value|
-#       @local_script_location = value.strip()
+#       @local_script_path = value.strip()
 #     end
 
 #     opts.on( '-h', '--help', 'Display this screen' ) do

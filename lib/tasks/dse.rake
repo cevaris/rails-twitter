@@ -5,12 +5,25 @@ namespace :dse do
 
   namespace :pig do
 
-    desc "Launches fake Pig job"
+    desc "Launches Pig job"
     task :create => :environment do
-      puts "Running"
 
-      rpig = RPig.new()
+      rpig = RPig.new({ 
+        local_script_path: "#{Rails.root}/scripts/pig/tweet-json.pig",
+        execute: 'mapreduce'
+      })
       puts rpig.inspect
+
+
+      rpig.execute()
+
+
+
+
+      
+
+      
+
 
       # args = { id: 'fake', dd: rand(10000) }
       # Resque.enqueue(Jobs::Pig, args)
