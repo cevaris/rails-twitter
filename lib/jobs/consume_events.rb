@@ -9,14 +9,21 @@ module Jobs
       puts "Consuming Events #{args}"
 
       channel = args['channel']
-      redis   = Redis.new(Rq::Application.config.redis)
-      cassandra = Cassandra.new('APPS', Rq::Application.config.cassandra)
+      @redis   = Redis.new(Rq::Application.config.redis)
+      @cassandra = Cassandra.new('APPS', Rq::Application.config.cassandra)
+
+      puts @cassandra.keyspaces
 
       loop do
-        list, messages = redis.blpop(channel)
-        json = JSON.parse(message)
-        events = json[:events]
+        list, messages = @redis.blpop(channel)
+        # puts "#{list} #{messages}"
+        json = JSON.parse(messages)
+        events = json['events']
+        app_id = json['app']['id']
 
+        events.each do |event|
+          puts "WRITING : #{app_id} - #{event} "
+        end
 
 
       end
