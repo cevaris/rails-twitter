@@ -7,8 +7,33 @@ require 'net/https'
 require "redis"
 require "json"
 
+require 'jobs'
+require 'rpig'
+
 
 namespace :events do
+
+
+
+  desc "Check running Applications"
+  task :process => :environment do
+    
+    args = {}
+    Resque.enqueue(Jobs::ProcessEvents, args)
+
+  end
+
+
+
+
+
+
+
+
+
+
+
+
   desc "Tail from the Redis Queue"
   task :tail, [:channel] => :environment do |task, args|
     channel    = args[:channel].to_s
