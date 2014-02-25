@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   private
 
   def event_handler
-    @event_handler ||= RedisEvents.instance('events:raw')
+    @event_handler ||= RedisEvents.instance
   end
 
 end

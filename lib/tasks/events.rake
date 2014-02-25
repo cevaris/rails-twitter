@@ -18,8 +18,9 @@ namespace :events do
 
     loop do
       list, message = redis.blpop(channel)
-      json = JSON.parse(message)
-      puts json
+      puts message
+      # json = JSON.parse(message)
+      # puts json
     end
 
   end
@@ -38,15 +39,16 @@ namespace :events do
 
     uri = URI.parse("http://localhost:3000/events")
 
-    buffer = rand(50)
+    buffer = rand(3)+1
     count  = 0
     tweets = []
     TweetStream::Client.new.sample do |status|
       if count >= buffer
         # puts "Writing out tweets #{count}:#{buffer}"
-        Net::HTTP.post_form(uri, {events: tweets.to_json})
+        payload = { events: tweets }.to_json
+        Net::HTTP.post_form(uri, {raw_events: payload})
         puts "Sent #{count} tweets"
-        buffer = rand(50)
+        buffer = rand(3)+1
         count  = 0
         tweets = []
       else  
