@@ -1,3 +1,3 @@
 require "redis"
 require "json"
-RedisEvents.instance.start('events:raw')
+$redis = Redis.new(Rq::Application.config.redis)

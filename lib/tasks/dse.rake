@@ -6,10 +6,11 @@ namespace :dse do
   namespace :pig do
 
     desc "Launches Pig job"
-    task :create => :environment do
+    task :test => :environment do
 
       rpig = RPig.new({ 
         local_script_path: "#{Rails.root}/scripts/pig/tweet-json.pig",
+        jars: ['/Users/cevaris/Documents/workspace/pig/udfs/udfs/bin/epic.jar']
       })
       puts rpig.inspect
       rpig.execute()

@@ -38,9 +38,22 @@ namespace :events do
 
     uri = URI.parse("http://localhost:3000/events")
 
+    buffer = rand(50)
+    count  = 0
+    tweets = []
     TweetStream::Client.new.sample do |status|
-      # puts "#{status.text}"
-      Net::HTTP.post_form(uri, {event: status.to_json})
+      if count >= buffer
+        # puts "Writing out tweets #{count}:#{buffer}"
+        Net::HTTP.post_form(uri, {events: tweets.to_json})
+        puts "Sent #{count} tweets"
+        buffer = rand(50)
+        count  = 0
+        tweets = []
+      else  
+        # puts "Queuing tweets #{count}:#{buffer}"
+        tweets << status
+        count += 1
+      end
     end
   end
 end

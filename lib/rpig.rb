@@ -3,14 +3,21 @@ class RPig
 
   def initialize(options={})
 
+    @local_script_path = 'NOT_DEFINED'
     @username = 'vagrant'
-    @remote_script_path = '/deployment/pig/scripts/'
+    @remote_script_path = '/deployment/pig/'
     @host = '192.168.3.100'
     @execute = 'mapreduce'
+    @jars = []
 
     options.each { |k,v| instance_variable_set("@#{k}", v) }  
     check_preconditions()  
 
+  end
+
+  def send_command(command)
+    puts command
+    puts `#{command}`
   end
 
   def username_host
@@ -18,35 +25,42 @@ class RPig
     "#{@username}@#{@host}"
   end
 
-  def push_file()
-    # scp <PIG_SCRIPT_FILE> <REMOTE_LOCATION>:<PIG_SCRIPT_LOCATION>
-    command = "scp #{@local_script_path} #{username_host()}:#{@remote_script_path}"
-    puts command
-    puts `#{command}`
+  def push_jar(jar_path)
+    # rsync <PIG_SCRIPT_FILE> <REMOTE_LOCATION>:<PIG_SCRIPT_LOCATION>
+    command = "rsync #{jar_path} #{username_host()}:#{@remote_script_path}udfs/"
+    send_command(command)
+  end
+
+  def push_file(file_path)
+    # rsync <PIG_SCRIPT_FILE> <REMOTE_LOCATION>:<PIG_SCRIPT_LOCATION>
+    command = "rsync #{file_path} #{username_host()}:#{@remote_script_path}scripts/"
+    send_command(command)
   end
 
   def pig_command()
     if @local_script_path
       # dse pig -x <EXECUTION_TYPE> -f <PIG_SCRIPT_FILE>
-      "dse pig -x #{@execute} -f #{@remote_script_path}#{File.basename(@local_script_path)}"
+      "dse pig -x #{@execute} -f #{@remote_script_path}scripts/#{File.basename(@local_script_path)}"
     elsif 
       fail "Pig script file is missing"
     end
   end
 
 
-  def send_command(command)
-    ssh_command = "ssh #{username_host()} #{command}"
-    puts ssh_command
-    puts `#{ssh_command}`
-  end
-
 
   def execute()
     # First push file
-    push_file()
+    push_file(@local_script_path)
+
+    # Push any jar files
+    @jars.each do |jar_path|
+      push_jar(jar_path)
+    end
+
     # Execute file 
-    send_command(pig_command())
+    command = "ssh #{username_host()} #{pig_command()}"
+    send_command(command)
+    
   end
 
 
