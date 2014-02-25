@@ -54,6 +54,6 @@ gem "font-awesome-rails", '~> 4.0.3.1'
 gem 'activerecord-session_store', '~> 0.1.0'
 gem 'tweetstream'
 gem 'whenever', :require => false
-
+gem 'cassandra'
 
 

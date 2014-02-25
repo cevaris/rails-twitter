@@ -3,5 +3,7 @@ require 'jobs'
 Resque.redis = Redis.new(Rq::Application.config.redis)
 
 
-# Start demon
-Resque.enqueue(Jobs::ConsumeEvents, {channel: EventApplication.RAW_EVENTS})
+# Delete all queued workers for consuming events
+Resque.redis.del "queue:consume_events"
+# Start workers for consuming events
+Resque.enqueue(Jobs::ConsumeEvents, {channel: EventApplication::RAW_EVENTS})

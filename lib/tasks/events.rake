@@ -29,11 +29,6 @@ namespace :events do
 
 
 
-
-
-
-
-
   desc "Tail from the Redis Queue"
   task :tail, [:channel] => :environment do |task, args|
     channel    = args[:channel].to_s
