@@ -28,8 +28,8 @@ eventsD = group eventsC by screen_name;
 eventsE = FOREACH eventsD GENERATE 
   group, COUNT($1);
 
-DESCRIBE eventsE;
-DUMP eventsE;
+result = ORDER eventsE BY $1 ASC;
+DUMP result;
 
 -- DESCRIBE eventsD;
 -- DUMP eventsD;
