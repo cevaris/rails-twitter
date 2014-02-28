@@ -20,7 +20,6 @@ module Jobs
       @cassandra = Cql::Client.connect(Rq::Application.config.cassandra)
       loop do
 
-
         list, messages = @redis.blpop(channel)
         json = JSON.parse(messages)
         events = json['events']
@@ -35,7 +34,6 @@ module Jobs
           @cassandra.execute( insert_event(args) )
           puts "Inserted #{args[:event]}"
         end
-
 
       end
 

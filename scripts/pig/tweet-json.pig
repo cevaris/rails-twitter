@@ -1,8 +1,8 @@
 set debug on;
-set job.name 'TweetJson';
+set job.name 'tweet-json';
 -- set elephantbird.jsonloader.nestedLoad 'true';
 
-REGISTER /deployment/pig/udfs/epic.jar;
+REGISTER /deployment/pig/udfs/pig-json.jar;
 -- REGISTER /deployment/pig/udfs/elephant-bird-2.1.10.jar;
 -- REGISTER /deployment/pig/udfs/jackson-core-2.2.3.jar;
 -- REGISTER /deployment/pig/udfs/jackson-databind-2.2.3.jar;
@@ -12,26 +12,33 @@ REGISTER /deployment/pig/udfs/epic.jar;
 -- DEFINE JsonLoader com.twitter.elephantbird.pig.load.JsonLoader();
 -- DEFINE JsonMap com.mozilla.pig.eval.json.JsonMap();
 -- DEFINE JsonTupleMap com.mozilla.pig.eval.json.JsonTupleMap();
-DEFINE JsonLoader epic.colorado.edu.udfs.JsonLoader();
+DEFINE JsonToMap org.apache.pig.udfs.json.JsonToMap();
 
 
-events = LOAD 'cfs:///user/cevaris/2014-02-18-11' 
-  USING JsonLoader() AS (json:map[]);
--- events = LOAD 'cfs:///user/cevaris/2014-02-18-11' 
---   USING JsonLoader('retweeted_status:chararray');
--- DESCRIBE  events;
+events = LOAD 'cql://applications/events'
+  USING CqlStorage()
+  AS (bucket: chararray, id: chararray, app_id: chararray, event: chararray);
+
 events_sample = LIMIT events 10;
+-- DUMP events_sample;
 
-eventsA = FOREACH events_sample GENERATE 
-  FLATTEN($0#'entities') as entities;
+eventsA = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
+eventsB = FOREACH eventsA GENERATE FLATTEN(json#'entities') AS entities;
+eventsC = FOREACH eventsB GENERATE FLATTEN(entities#'urls') AS urls;
+eventsD = FOREACH eventsC GENERATE FLATTEN(urls#'url') AS url;
+DUMP eventsD;
 
-eventsB = FOREACH eventsA GENERATE 
-  FLATTEN($0#'urls') as urls;
+
+-- eventsA = FOREACH events_sample GENERATE 
+--   FLATTEN($0#'entities') as entities;
+
+-- eventsB = FOREACH eventsA GENERATE 
+--   FLATTEN($0#'urls') as urls;
 
 -- eventsB = FOREACH eventsA GENERATE 
 --   JsonMap($0);
 
-DUMP eventsB;
+-- DUMP eventsB;
 
 -- eventsB = FOREACH eventsA GENERATE 
 --   FLATTEN(entities#'urls') AS urls;
