@@ -10,7 +10,8 @@ namespace :dse do
 
       rpig = RPig.new({ 
         local_script_path: "#{Rails.root}/scripts/pig/tweet-json.pig",
-        jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar']
+        jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar'],
+        execute: 'local'
       })
       puts rpig.inspect
       rpig.execute()
