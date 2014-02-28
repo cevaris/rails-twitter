@@ -10,10 +10,14 @@ events = LOAD 'cql://applications/events'
   AS (bucket: chararray, id: chararray, app_id: chararray, event: chararray);
 
 eventsA = FILTER events BY (bucket == '2014-02-28-20');
-eventsB = FOREACH eventsA GENERATE COUNT(id);
+grouped         = GROUP eventsA ALL;
+count           = FOREACH grouped GENERATE COUNT(eventsA);
+dump count;
+
+
 -- eventsB = GROUP eventsA BY id;
 -- eventsC = FOREACH eventsB GENERATE SUM(eventsA);
-DUMP eventsB;
+-- DUMP eventsB;
 
 -- events_sample = LIMIT events 10;
 -- DUMP events_sample;
