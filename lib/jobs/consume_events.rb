@@ -1,5 +1,4 @@
 module Jobs
-  # require 'cassandra'
   require 'cql'
   require 'json'
   require 'securerandom'
@@ -7,9 +6,7 @@ module Jobs
   class ConsumeEvents
     @queue = :consume_events
 
-
-
-    def insert_event(args)
+    def self.insert_event(args)
       %{INSERT INTO applications.events (bucket, id, app_id, event) VALUES ('#{args[:bucket]}', now(), #{args[:app_id]}, '#{args[:event]}');}
     end
 
@@ -32,14 +29,11 @@ module Jobs
         args[:app_id] = json['app']['id']
         args[:bucket] = Time.now.getutc.strftime "%Y-%m-%d-%H"
 
-        # events.each do |event|
-        #   # @cassandra.insert('EVENTS',"#{app_id}:#{bucket}")
-        #   puts "WRITING : #{app_id} - #{bucket} - #{event} "
-        # end
-        
         events.each do |event|
-          args[:event] = event
-          puts insert_event(args)
+          args[:event] = event.to_json.gsub("'", "''")
+          # puts insert_event(args)
+          @cassandra.execute( insert_event(args) )
+          puts "Inserted #{args[:event]}"
         end
 
 

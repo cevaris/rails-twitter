@@ -4,7 +4,7 @@ class RedisEvents
   include Singleton
 
   def dump_events(messages)
-    puts "RedisEvents - #{messages}"
+    # puts "RedisEvents - #{messages}"
     result = $redis.rpush(EventApplication::RAW_EVENTS, messages)
   end
 
