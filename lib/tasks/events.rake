@@ -72,18 +72,18 @@ namespace :events do
     buffer = rand(3)+1
     count  = 0
     tweets = []
+
     TweetStream::Client.new.sample do |status|
       if count >= buffer
         app = apps.sample
-        # puts "Writing out tweets #{count}:#{buffer}"
-        payload = { events: tweets, app: { id: app.id } }.to_json
+        payload = { events: tweets, app: { id: app.uuid } }.to_json
         Net::HTTP.post_form(uri, {raw_events: payload})
+        
         puts "Sent #{count} tweets"
         buffer = rand(3)+1
         count  = 0
         tweets = []
       else  
-        # puts "Queuing tweets #{count}:#{buffer}"
         tweets << status
         count += 1
       end

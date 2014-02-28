@@ -28,6 +28,6 @@ Rq::Application.configure do
   config.assets.debug = true
 
   config.redis = {host: 'localhost', port: 6379, thread_safe: true}
-  config.cassandra = '192.168.3.100:9160'
+  config.cassandra = {hosts: ['192.168.3.100']}
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 end
