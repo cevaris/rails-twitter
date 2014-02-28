@@ -13,16 +13,6 @@ eventsB = GROUP eventsA ALL;
 eventsBCount   = FOREACH eventsB GENERATE COUNT(eventsA);
 dump eventsBCount;
 
-
--- eventsB = GROUP eventsA BY id;
--- eventsC = FOREACH eventsB GENERATE SUM(eventsA);
--- DUMP eventsB;
-
--- events_sample = LIMIT events 10;
--- DUMP events_sample;
-
-
-
 -- eventsA = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
 -- eventsB = FOREACH eventsA GENERATE FLATTEN(json#'entities') AS entities;
 -- eventsC = FOREACH eventsB GENERATE FLATTEN(entities#'urls') AS urls;
