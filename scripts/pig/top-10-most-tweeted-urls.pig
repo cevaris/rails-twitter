@@ -18,7 +18,7 @@ eventsD = FOREACH eventsC GENERATE FLATTEN(urls#'url') AS url;
 eventsE = GROUP eventsD BY url;
 
 eventsF = FOREACH eventsE GENERATE 
-  group, COUNT($1);
+  group AS url, COUNT($1) as frequency;
 
 eventsG = ORDER eventsF BY $1 DESC;
 eventsH = LIMIT eventsG 10;

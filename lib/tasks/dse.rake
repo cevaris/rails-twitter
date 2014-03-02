@@ -9,7 +9,9 @@ namespace :dse do
     task :test => :environment do
 
       rpig = RPig.new({ 
-        local_script_path: "#{Rails.root}/scripts/pig/tweet-json.pig",
+        # local_script_path: "#{Rails.root}/scripts/pig/tweet-json.pig",
+        # local_script_path: "#{Rails.root}/scripts/pig/top-10-most-tweeted-urls.pig",
+        local_script_path: "#{Rails.root}/scripts/pig/top-10-most-tweeted-users.pig",
         jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar'],
         execute: 'local'
       })
