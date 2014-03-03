@@ -6,15 +6,14 @@ module Jobs
     def self.perform(args)
       puts "Pig Job #{args}"
 
-      # rpig = RPig.new({ 
-      #   local_script_path: args['script'],
-      #   jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar'],
-      #   # execute: 'local',
-      #   params: {input: 'cql://applications/events', bucket: '2014-02-28-20'}
-      # })
-      rpig = RPig.new(args)
+      rpig = RPig.new({ 
+        local_script_path: args['script'],
+        jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar'],
+        params: {input: 'cql://applications/events', bucket: '2014-02-28-20'}
+      })
+      # rpig = RPig.new(args)
       puts rpig.inspect
-      # rpig.execute()
+      rpig.execute()
 
 
     rescue SQLite3::BusyException => e

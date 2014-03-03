@@ -24,24 +24,6 @@ namespace :events do
   end
 
 
-  desc "Check consuming Applications Events"
-  task :consume => :environment do
-    
-    # # Starts only one worker
-    # if Resque.size('consume_events') == 0
-    #   puts "Start Consumer #{Resque.size('consume_events')} "
-    #   Resque.enqueue(Jobs::ConsumeEvents, {channel: EventApplication::RAW_EVENTS})
-    # else
-    #   # Delete any queued consumers
-    #   Resque.redis.del "resque:queue:consume_events"
-    # end
-
-  end
-
-
-
-
-
 
 
   desc "Tail from the Redis Queue"
