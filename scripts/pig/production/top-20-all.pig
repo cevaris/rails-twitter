@@ -1,5 +1,5 @@
-set debug on;
--- set debug off;
+-- set debug on;
+set debug off;
 set default_parallel 2;
 set job.name 'all-metrics';
 
