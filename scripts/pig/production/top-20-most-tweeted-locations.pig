@@ -1,5 +1,6 @@
-set debug on;
-set job.name 'tweet-json';
+-- set debug on;
+set debug off;
+set job.name 'top-20-locations';
 
 REGISTER /deployment/pig/udfs/pig-json.jar;
 DEFINE JsonToMap org.apache.pig.udfs.json.JsonToMap();
@@ -13,10 +14,10 @@ events_sample = FILTER events BY (bucket == '$bucket');
 
 eventsA = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
 eventsB = FOREACH eventsA GENERATE FLATTEN(json#'user') AS user;
-eventsC = FOREACH eventsB GENERATE user#'screen_name' AS screen_name;
--- DUMP eventsC;
+eventsC = FOREACH eventsB GENERATE user#'location' AS location;
+eventsC_wo_nulls = FILTER eventsC BY location != '';
 
-eventsD = GROUP  eventsC By screen_name;
+eventsD = GROUP  eventsC_wo_nulls By location;
 
 eventsE = FOREACH eventsD GENERATE 
   group AS user, COUNT($1) AS frequency;

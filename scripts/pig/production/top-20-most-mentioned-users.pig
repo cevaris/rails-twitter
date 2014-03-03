@@ -1,5 +1,5 @@
 set debug on;
-set job.name 'tweet-json';
+set job.name 'top-20-users';
 
 REGISTER /deployment/pig/udfs/pig-json.jar;
 DEFINE JsonToMap org.apache.pig.udfs.json.JsonToMap();
