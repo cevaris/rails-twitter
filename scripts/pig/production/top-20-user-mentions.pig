@@ -1,5 +1,7 @@
-set debug on;
-set job.name 'top-20-users';
+-- set debug on;
+set debug off;
+set default_parallel 2;
+set job.name 'top-20-user-mentions';
 
 REGISTER /deployment/pig/udfs/pig-json.jar;
 DEFINE JsonToMap org.apache.pig.udfs.json.JsonToMap();

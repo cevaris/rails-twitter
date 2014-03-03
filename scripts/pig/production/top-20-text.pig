@@ -1,6 +1,7 @@
 -- set debug on;
 set debug off;
-set job.name 'top-20-urls';
+set default_parallel 2;
+set job.name 'top-20-text';
 
 REGISTER /deployment/pig/udfs/pig-json.jar;
 DEFINE JsonToMap org.apache.pig.udfs.json.JsonToMap();
@@ -12,15 +13,14 @@ events = LOAD '$input'
 events_sample = FILTER events BY (bucket == '$bucket');
 
 eventsA = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
-eventsB = FOREACH eventsA GENERATE FLATTEN(json#'entities') AS entities;
-eventsC = FOREACH eventsB GENERATE FLATTEN(entities#'urls') AS urls;
-eventsD = FOREACH eventsC GENERATE FLATTEN(urls#'url') AS url;
+eventsB = FOREACH eventsA GENERATE FLATTEN(json#'text') AS text;
 
-eventsE = GROUP eventsD BY url;
+
+eventsE = GROUP eventsB BY text;
 
 eventsF = FOREACH eventsE GENERATE 
-  group AS url, COUNT($1) as frequency;
+  group, COUNT($1) as frequency;
 
-eventsG = ORDER eventsF BY $1 DESC;
+eventsG = ORDER eventsF BY frequency DESC;
 eventsH = LIMIT eventsG 20;
 DUMP eventsH;

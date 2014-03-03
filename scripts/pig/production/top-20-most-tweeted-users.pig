@@ -1,10 +1,10 @@
 -- set debug on;
 set debug off;
-set job.name 'top-20-users';
+set default_parallel 2;
+set job.name 'top-20-users-tweeted';
 
 REGISTER /deployment/pig/udfs/pig-json.jar;
 DEFINE JsonToMap org.apache.pig.udfs.json.JsonToMap();
-
 
 events = LOAD '$input'
   USING CqlStorage()
@@ -15,7 +15,7 @@ events_sample = FILTER events BY (bucket == '$bucket');
 eventsA = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
 eventsB = FOREACH eventsA GENERATE FLATTEN(json#'user') AS user;
 eventsC = FOREACH eventsB 
-  GENERATE FLATTEN(user_mentions#'screen_name') AS screen_name, FLATTEN(user_mentions#'id') AS user_id;
+  GENERATE FLATTEN(user#'screen_name') AS screen_name, FLATTEN(user#'id') AS user_id;
 
 eventsD = GROUP eventsC BY (screen_name, user_id);
 

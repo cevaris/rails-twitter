@@ -1,5 +1,6 @@
 -- set debug on;
 set debug off;
+set default_parallel 2;
 set job.name 'top-20-locations';
 
 REGISTER /deployment/pig/udfs/pig-json.jar;

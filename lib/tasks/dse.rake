@@ -6,12 +6,11 @@ namespace :dse do
   namespace :pig do
 
     desc "Launches ALL Pig job"
-    task :test => :environment do
+    task :all => :environment do
 
 
     Dir.glob(File.join("#{Rails.root}/scripts/pig/production", "*.pig")).each do |script|
       rpig = RPig.new({ 
-        # local_script_path: "#{Rails.root}/scripts/pig/top-20-most-tweeted-locations.pig",
         local_script_path: script,
         jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar'],
         # execute: 'local',
@@ -30,8 +29,7 @@ namespace :dse do
     task :script, [:script] => :environment do |task, args|
 
       rpig = RPig.new({ 
-        local_script_path: "#{Rails.root}/scripts/pig/production/#{script}",
-        local_script_path: ,
+        local_script_path: "#{Rails.root}/scripts/pig/production/#{args['script']}",
         jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar'],
         execute: 'local',
         params: {input: 'cql://applications/events', bucket: '2014-02-28-20'}
@@ -47,10 +45,5 @@ namespace :dse do
   
    
   end
-
-
-    
-  
-   
 
 end
