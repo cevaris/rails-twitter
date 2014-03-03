@@ -21,7 +21,7 @@ eventsC_wo_nulls = FILTER eventsC BY location != '';
 eventsD = GROUP  eventsC_wo_nulls By location;
 
 eventsE = FOREACH eventsD GENERATE 
-  group AS user, COUNT($1) AS frequency;
+  group AS location, COUNT($1) AS frequency;
 
 eventsF = ORDER eventsE BY $1 DESC;
 eventsG = LIMIT eventsF 20;

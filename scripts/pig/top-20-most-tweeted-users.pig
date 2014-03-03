@@ -14,8 +14,7 @@ events_sample = FILTER events BY (bucket == '$bucket');
 
 eventsA = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
 eventsB = FOREACH eventsA GENERATE FLATTEN(json#'user') AS user;
-eventsC = FOREACH eventsB 
-  GENERATE FLATTEN(user#'screen_name') AS screen_name, FLATTEN(user#'id') AS user_id;
+eventsC = FOREACH eventsB GENERATE FLATTEN(user#'screen_name') AS screen_name, FLATTEN(user#'id') AS user_id;
 
 eventsD = GROUP eventsC BY (screen_name, user_id);
 
