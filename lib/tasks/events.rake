@@ -27,8 +27,8 @@ namespace :events do
   desc "Check consuming Applications Events"
   task :consume => :environment do
     
-    args = {channel: EventApplication::RAW_EVENTS}
-    Resque.enqueue(Jobs::ConsumeEvents, args)
+    # args = {channel: EventApplication::RAW_EVENTS}
+    # Resque.enqueue(Jobs::ConsumeEvents, args)
 
   end
 

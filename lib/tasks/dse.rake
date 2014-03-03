@@ -8,20 +8,10 @@ namespace :dse do
     desc "Launches ALL Pig job"
     task :all => :environment do
 
-
-    Dir.glob(File.join("#{Rails.root}/scripts/pig/production", "*.pig")).each do |script|
-      rpig = RPig.new({ 
-        local_script_path: script,
-        jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar'],
-        # execute: 'local',
-        params: {input: 'cql://applications/events', bucket: '2014-02-28-20'}
-      })
-      puts rpig.inspect
-      rpig.execute()
-    end
-
-      # args = { id: 'fake', dd: rand(10000) }
-      # Resque.enqueue(Jobs::Pig, args)
+      Dir.glob(File.join("#{Rails.root}/scripts/pig/production", "*.pig")).each do |script|
+        args = { script: script }
+        Resque.enqueue(Jobs::ExecutePigScript, args)
+      end
       
     end
 
@@ -36,10 +26,6 @@ namespace :dse do
       })
       puts rpig.inspect
       rpig.execute()
-
-
-      # args = { id: 'fake', dd: rand(10000) }
-      # Resque.enqueue(Jobs::Pig, args)
       
     end
   

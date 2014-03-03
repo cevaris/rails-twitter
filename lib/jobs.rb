@@ -1,5 +1,5 @@
 require 'resque/errors'
-require 'jobs/pig'
+require 'jobs/execute_pig_script'
 require 'jobs/process_events'
 
 module Jobs
