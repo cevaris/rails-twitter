@@ -9,21 +9,16 @@ namespace :dse do
     task :test => :environment do
 
       rpig = RPig.new({ 
-        # local_script_path: "#{Rails.root}/scripts/pig/tweet-json.pig",
-        # local_script_path: "#{Rails.root}/scripts/pig/top-10-most-tweeted-urls.pig",
-        local_script_path: "#{Rails.root}/scripts/pig/top-10-most-tweeted-users.pig",
+        local_script_path: "#{Rails.root}/scripts/pig/top-20-most-tweeted-locations.pig",
         jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar'],
-        execute: 'local'
+        execute: 'local',
+        params: {input: 'cql://applications/events', bucket: '2014-02-28-20'}
       })
       puts rpig.inspect
       rpig.execute()
 
-
-
       # args = { id: 'fake', dd: rand(10000) }
       # Resque.enqueue(Jobs::Pig, args)
-
-
       
     end
   
