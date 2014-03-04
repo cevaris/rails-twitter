@@ -20,11 +20,11 @@ namespace :dse do
 
       rpig = RPig.new({ 
         local_script_path: "#{Rails.root}/scripts/pig/#{args['script']}",
-        jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar'],
+        jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar',
+               '/Users/cevaris/Documents/workspace/pig/pig-dse/pig-dse.jar'],
         execute: 'local',
         # execute: 'mapreduce',
-        # params: {input: 'cql://applications/events', bucket: '2014-02-28-20'}
-        params: {input: 'cql://applications/events?init_address=192.168.3.100', bucket: '2014-02-28-20'}
+        params: {input: 'cql://applications/events', bucket: '2014-02-28-20'}
       })
       puts rpig.inspect
       rpig.execute()
