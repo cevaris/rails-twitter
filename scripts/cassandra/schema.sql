@@ -10,3 +10,9 @@ CREATE TABLE events(
   event text, 
   PRIMARY KEY(bucket, id)
 );
+
+CREATE TABLE event_metrics(
+  bucket text PRIMARY KEY,
+  app_id uuid,
+  count int
+);

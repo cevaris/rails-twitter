@@ -8,10 +8,10 @@ namespace :dse do
     desc "Launches ALL Pig job"
     task :all => :environment do
 
-      Dir.glob(File.join("#{Rails.root}/scripts/pig", "*.pig")).each do |script|
-        args = { script: script }
-        Resque.enqueue(Jobs::ExecutePigScript, args)
-      end
+      # Dir.glob(File.join("#{Rails.root}/scripts/pig", "*.pig")).each do |script|
+      #   args = { script: script }
+      #   Resque.enqueue(Jobs::ExecutePigScript, args)
+      # end
       
     end
 
@@ -24,7 +24,12 @@ namespace :dse do
                '/Users/cevaris/Documents/workspace/pig/pig-dse/pig-dse.jar'],
         execute: 'local',
         # execute: 'mapreduce',
-        params: {input: 'cql://applications/events', bucket: '2014-02-28-20'}
+        params: {
+          input: 'cql://applications/events', 
+          output: 'cassandra://applications/event_metrics',
+          bucket: '2014-02-28-20', 
+          app_id: '8b685e40-0cd4-4516-bacd-b005dd94f569'
+        }
       })
       puts rpig.inspect
       rpig.execute()
