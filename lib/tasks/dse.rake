@@ -26,9 +26,9 @@ namespace :dse do
         # execute: 'mapreduce',
         params: {
           input: 'cql://applications/events', 
-          output: 'cassandra://applications/event_metrics',
-          bucket: '2014-02-28-20', 
-          app_id: '8b685e40-0cd4-4516-bacd-b005dd94f569'
+          output: 'cql://applications/event_metrics',
+          bucket: '2014-03-05-22', 
+          app_id: 1
         }
       })
       puts rpig.inspect

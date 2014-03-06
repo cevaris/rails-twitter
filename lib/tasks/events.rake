@@ -15,11 +15,20 @@ namespace :events do
 
 
 
-  desc "Check running Applications"
-  task :process => :environment do
+  # desc "Check running Applications"
+  # task :process => :environment do
     
-    args = {}
-    Resque.enqueue(Jobs::ProcessEvents, args)
+  #   args = {}
+  #   Resque.enqueue(Jobs::ProcessEvents, args)
+
+  # end
+
+
+  desc "Check running Applications"
+  task :consume => :environment do
+    
+    args = {channel: 'events:raw'}
+    Resque.enqueue(Jobs::ConsumeEvents, args)
 
   end
 
@@ -64,7 +73,7 @@ namespace :events do
     TweetStream::Client.new.sample do |status|
       if count >= buffer
         app = apps.sample
-        payload = { events: tweets, app: { id: app.uuid } }.to_json
+        payload = { events: tweets, app: { id: app.id } }.to_json
         Net::HTTP.post_form(uri, {raw_events: payload})
         
         puts "Sent #{count} tweets"

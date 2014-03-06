@@ -8,6 +8,7 @@ module Jobs
 
     def self.insert_event(args)
       %{INSERT INTO applications.events (bucket, id, app_id, event) VALUES ('#{args[:bucket]}', now(), #{args[:app_id]}, '#{args[:event]}');}
+    # "INSERT INTO applications.events (bucket, id, app_id, event) VALUES (?, now(), ?, ?);"
     end
 
 
@@ -18,6 +19,8 @@ module Jobs
       channel = args['channel']
       @redis   = Redis.new(Rq::Application.config.redis)
       @cassandra = Cql::Client.connect(Rq::Application.config.cassandra)
+      # @cassandra.execute('INSERT INTO applications.events (bucket, id, app_id, event) VALUES (?, now(), ?, ?)
+      #   ', 'sue', 'Sue Smith', type_hints: [nil, :int])
       loop do
 
         list, messages = @redis.blpop(channel)
@@ -28,11 +31,14 @@ module Jobs
         args[:app_id] = json['app']['id']
         args[:bucket] = Time.now.getutc.strftime "%Y-%m-%d-%H"
 
+        args.select {|k,v| puts v.class}
+
         events.each do |event|
           args[:event] = event.to_json.gsub("'", "''")
-          # puts insert_event(args)
+          
           @cassandra.execute( insert_event(args) )
-          puts "Inserted #{args[:event]}"
+          # puts "Inserted #{args[:event]}"
+          puts "Inserted #{insert_event(args)}"
         end
 
       end

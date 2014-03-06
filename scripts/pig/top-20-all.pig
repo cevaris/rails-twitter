@@ -1,13 +1,13 @@
-set debug on;
--- set debug off;
+-- set debug on;
+set debug off;
 set default_parallel 2;
 set job.name 'all-metrics';
 
 REGISTER /deployment/pig/udfs/pig-json.jar;
-REGISTER /deployment/pig/udfs/pig-dse.jar;
+-- REGISTER /deployment/pig/udfs/pig-dse.jar;
 
 DEFINE JsonToMap org.apache.pig.udfs.json.JsonToMap();
-DEFINE CqlStorage com.dse.pig.udfs.CqlStorage();
+-- DEFINE CqlStorage com.dse.pig.udfs.CqlStorage();
 
 events = LOAD '$input'
   USING CqlStorage()
@@ -18,12 +18,31 @@ events_json = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
 
 
 
--- Number of events
+
+
+-- -- Number of events
+-- group_all = GROUP events_sample ALL;
+-- events_count  = FOREACH group_all GENERATE COUNT(events_sample);
+-- DUMP events_count;
+
 group_all = GROUP events_sample ALL;
-events_count  = FOREACH group_all GENERATE '$bucket', TOBAG(TOTUPLE('count', COUNT(events_sample)));
+-- events_count  = FOREACH group_all GENERATE '$bucket', 'count', COUNT(events_sample);
+-- events_count  = FOREACH group_all GENERATE TOTUPLE(TOTUPLE('bucket', '$bucket')), TOTUPLE('app_id','$app_id'), TOTUPLE(COUNT(events_sample));
+events_count  = FOREACH group_all GENERATE TOTUPLE(TOTUPLE('bucket', '$bucket')), TOTUPLE((long)'$app_id', (int)COUNT(events_sample));
 DESCRIBE events_count;
 DUMP events_count;
-STORE events_count INTO '$output' USING CassandraStorage();
+
+-- insert_format = FOREACH events_count GENERATE TOTUPLE(TOTUPLE('year',2011),TOTUPLE('state',State)),TOTUPLE(TotalFeet);
+STORE events_count INTO '$output?output_query=UPDATE%20applications.event_metrics%20SET%20app_id%20%3D%20%3F%2C%20count%20%3D%20%3F' USING CqlStorage;
+
+-- group_all = GROUP events_sample ALL;
+-- events_count  = FOREACH group_all GENERATE '$bucket', TOTUPLE('count', COUNT(events_sample));
+-- group_counts = GROUP events_count by $0;
+-- countsA = FOREACH group_counts GENERATE $0, $1.$1.$1;
+-- -- eventsA  = FOREACH group_counts GENERATE group;
+-- DESCRIBE countsA;
+-- DUMP countsA;
+-- -- STORE events_count INTO '$output' USING CassandraStorage();
 
 
 

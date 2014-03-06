@@ -11,7 +11,6 @@ class RPig
     @params = []
     @jars = []
 
-
     options.each { |k,v| instance_variable_set("@#{k}", v) }  
     check_preconditions()  
 
@@ -44,7 +43,12 @@ class RPig
 
     args = []
     @params.each do |key, value|
-      args << "-param #{key}='#{value}'"
+      # if value.respond_to?(:to_i)
+      if value.instance_of? Fixnum
+        args << "-param #{key}=#{value.to_i}"
+      else
+        args << "-param #{key}='#{value}'"
+      end
     end
 
     args.join(' ')
