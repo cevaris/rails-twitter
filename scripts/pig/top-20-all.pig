@@ -25,24 +25,14 @@ events_json = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
 -- events_count  = FOREACH group_all GENERATE COUNT(events_sample);
 -- DUMP events_count;
 
-group_all = GROUP events_sample ALL;
--- events_count  = FOREACH group_all GENERATE '$bucket', 'count', COUNT(events_sample);
--- events_count  = FOREACH group_all GENERATE TOTUPLE(TOTUPLE('bucket', '$bucket')), TOTUPLE('app_id','$app_id'), TOTUPLE(COUNT(events_sample));
-events_count  = FOREACH group_all GENERATE TOTUPLE(TOTUPLE('bucket', '$bucket')), TOTUPLE((long)'$app_id', (int)COUNT(events_sample));
-DESCRIBE events_count;
-DUMP events_count;
+-- group_all = GROUP events_sample BY (bucket, app_id);
+-- events_count   = FOREACH group_all GENERATE '$bucket:$app_id', TOBAG(TOTUPLE('count',(long)COUNT($1)));
+-- DESCRIBE events_count;
+-- DUMP events_count;
+
 
 -- insert_format = FOREACH events_count GENERATE TOTUPLE(TOTUPLE('year',2011),TOTUPLE('state',State)),TOTUPLE(TotalFeet);
-STORE events_count INTO '$output?output_query=UPDATE%20applications.event_metrics%20SET%20app_id%20%3D%20%3F%2C%20count%20%3D%20%3F' USING CqlStorage;
-
--- group_all = GROUP events_sample ALL;
--- events_count  = FOREACH group_all GENERATE '$bucket', TOTUPLE('count', COUNT(events_sample));
--- group_counts = GROUP events_count by $0;
--- countsA = FOREACH group_counts GENERATE $0, $1.$1.$1;
--- -- eventsA  = FOREACH group_counts GENERATE group;
--- DESCRIBE countsA;
--- DUMP countsA;
--- -- STORE events_count INTO '$output' USING CassandraStorage();
+-- STORE events_count INTO '$output?output_query=UPDATE%20applications.event_metrics%20SET%20count%20%3D%20%3F' USING CqlStorage;
 
 
 
@@ -50,16 +40,26 @@ STORE events_count INTO '$output?output_query=UPDATE%20applications.event_metric
 
 
 
+-- Languages
+langs = FOREACH events_json GENERATE json#'lang' AS lang;
+langs_wo_nulls = FILTER langs BY lang != '';
+group_by_langs = GROUP langs_wo_nulls BY lang;
+langs_counts = FOREACH group_by_langs GENERATE group, COUNT($1) as frequency;
+langs_counts_desc = ORDER langs_counts BY frequency DESC;
+top_langs = LIMIT langs_counts_desc 20;
 
--- -- Languages
--- langs = FOREACH events_json GENERATE json#'lang' AS lang;
--- langs_wo_nulls = FILTER langs BY lang != '';
+top_langsB = FOREACH top_langs GENERATE 'langs', TOTUPLE($0,$1);
+top_langsC = FOREACH top_langsB GENERATE '$bucket:$app_id', TOBAG(expr)
+group_by_langs = GROUP top_langsC BY row_key;
+DESCRIBE group_by_langs
+DUMP group_by_langs;
+
 -- group_by_langs = GROUP langs_wo_nulls BY lang;
 -- langs_counts = FOREACH group_by_langs GENERATE group, COUNT($1) as frequency;
 -- langs_counts_desc = ORDER langs_counts BY frequency DESC;
 -- top_langs = LIMIT langs_counts_desc 20;
+-- DESCRIBE top_langs
 -- DUMP top_langs;
-
 
 
 

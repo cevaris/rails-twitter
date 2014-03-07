@@ -31,7 +31,7 @@ module Jobs
         args[:app_id] = json['app']['id']
         args[:bucket] = Time.now.getutc.strftime "%Y-%m-%d-%H"
 
-        args.select {|k,v| puts v.class}
+        # args.select {|k,v| puts v.class}
 
         events.each do |event|
           args[:event] = event.to_json.gsub("'", "''")

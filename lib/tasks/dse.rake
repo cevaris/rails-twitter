@@ -27,8 +27,8 @@ namespace :dse do
         params: {
           input: 'cql://applications/events', 
           output: 'cql://applications/event_metrics',
-          bucket: '2014-03-05-22', 
-          app_id: 1
+          bucket: '2014-03-06-03', 
+          app_id: 2
         }
       })
       puts rpig.inspect

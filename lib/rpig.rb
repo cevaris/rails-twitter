@@ -43,7 +43,6 @@ class RPig
 
     args = []
     @params.each do |key, value|
-      # if value.respond_to?(:to_i)
       if value.instance_of? Fixnum
         args << "-param #{key}=#{value.to_i}"
       else
