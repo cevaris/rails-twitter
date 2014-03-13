@@ -18,7 +18,7 @@ module Jobs
       
       puts "Process Events #{args}"
 
-      EventApplication.all.map { |app| process(app)}
+      Application.all.map { |app| process(app)}
 
       
 

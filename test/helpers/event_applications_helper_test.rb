@@ -1,4 +1,4 @@
 require 'test_helper'
 
-class EventApplicationsHelperTest < ActionView::TestCase
+class ApplicationsHelperTest < ActionView::TestCase
 end

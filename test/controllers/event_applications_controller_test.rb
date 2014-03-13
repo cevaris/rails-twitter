@@ -1,14 +1,14 @@
 require 'test_helper'
 
-class EventApplicationsControllerTest < ActionController::TestCase
+class ApplicationsControllerTest < ActionController::TestCase
   setup do
-    @event_application = event_applications(:one)
+    @application = applications(:one)
   end
 
   test "should get index" do
     get :index
     assert_response :success
-    assert_not_nil assigns(:event_applications)
+    assert_not_nil assigns(:applications)
   end
 
   test "should get new" do
@@ -16,34 +16,34 @@ class EventApplicationsControllerTest < ActionController::TestCase
     assert_response :success
   end
 
-  test "should create event_application" do
-    assert_difference('EventApplication.count') do
-      post :create, event_application: { name: @event_application.name }
+  test "should create application" do
+    assert_difference('Application.count') do
+      post :create, application: { name: @application.name }
     end
 
-    assert_redirected_to event_application_path(assigns(:event_application))
+    assert_redirected_to application_path(assigns(:application))
   end
 
-  test "should show event_application" do
-    get :show, id: @event_application
+  test "should show application" do
+    get :show, id: @application
     assert_response :success
   end
 
   test "should get edit" do
-    get :edit, id: @event_application
+    get :edit, id: @application
     assert_response :success
   end
 
-  test "should update event_application" do
-    patch :update, id: @event_application, event_application: { name: @event_application.name }
-    assert_redirected_to event_application_path(assigns(:event_application))
+  test "should update application" do
+    patch :update, id: @application, application: { name: @application.name }
+    assert_redirected_to application_path(assigns(:application))
   end
 
-  test "should destroy event_application" do
-    assert_difference('EventApplication.count', -1) do
-      delete :destroy, id: @event_application
+  test "should destroy application" do
+    assert_difference('Application.count', -1) do
+      delete :destroy, id: @application
     end
 
-    assert_redirected_to event_applications_path
+    assert_redirected_to applications_path
   end
 end

@@ -65,7 +65,7 @@ namespace :events do
 
     uri = URI.parse("http://localhost:3000/events")
 
-    apps = EventApplication.all.to_a
+    apps = Application.all.to_a
     buffer = rand(3)+1
     count  = 0
     tweets = []

@@ -5,7 +5,7 @@ class RedisEvents
 
   def dump_events(messages)
     # puts "RedisEvents - #{messages}"
-    result = $redis.rpush(EventApplication::RAW_EVENTS, messages)
+    result = $redis.rpush(Application::RAW_EVENTS, messages)
   end
 
 end
