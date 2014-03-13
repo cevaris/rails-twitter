@@ -1,5 +1,6 @@
 require 'jobs'
 require 'rpig'
+require 'rhadoop'
 
 namespace :dse do
 
@@ -34,11 +35,32 @@ namespace :dse do
       puts rpig.inspect
       rpig.execute()
 
-      
-      
     end
   
    
+  end
+
+
+  namespace :hadoop do
+
+    desc "Launches Hadoop job"
+    # task :file, [:file] => :environment do |task, args|
+    task :execute => :environment do
+
+      # /user/vagrant/event_metrics/2/2014-03-06-03/top_langs/part-r-00000
+      rhadoop = RHadoop.new({ 
+        # remote_file_path: "/user/vagrant/event_metrics/2/2014-03-06-03/top_langs/",
+        # remote_file_path: args['file'],
+        bucket: '2014-03-06-03', 
+        metric: 'top_langs',
+        app_id: 2
+      })
+      puts rhadoop.inspect
+      rhadoop.execute()
+
+      
+      
+    end
   end
 
 end
