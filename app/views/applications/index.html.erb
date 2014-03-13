@@ -11,7 +11,7 @@
   </thead>
 
   <tbody>
-    <% current_user.applications.each do |application| %>
+    <% @applications.each do |application| %>
       <tr>
         <td><%= application.name %></td>
         <td><%= link_to 'Show', application %></td>

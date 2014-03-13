@@ -4,12 +4,13 @@ class ApplicationsController < ApplicationController
   # GET /applications
   # GET /applications.json
   def index
-    @applications = Application.all
+    @applications = current_user.applications
   end
 
   # GET /applications/1
   # GET /applications/1.json
   def show
+    @application = Application.find(params[:id])
   end
 
   # GET /applications/new
