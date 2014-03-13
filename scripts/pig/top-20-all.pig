@@ -17,9 +17,6 @@ events_sample = FILTER events BY (bucket == '$bucket' AND app_id == '$app_id');
 events_json = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
 
 
-
-
-
 -- -- Number of events
 -- group_all = GROUP events_sample ALL;
 -- events_count  = FOREACH group_all GENERATE COUNT(events_sample);
@@ -34,25 +31,25 @@ events_json = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
 -- insert_format = FOREACH events_count GENERATE TOTUPLE(TOTUPLE('year',2011),TOTUPLE('state',State)),TOTUPLE(TotalFeet);
 -- STORE events_count INTO '$output?output_query=UPDATE%20applications.event_metrics%20SET%20count%20%3D%20%3F' USING CqlStorage;
 
-
-
-
-
-
+samples = LIMIT events_json 100;
 
 -- Languages
-langs = FOREACH events_json GENERATE json#'lang' AS lang;
+langs = FOREACH samples GENERATE json#'lang' AS lang;
 langs_wo_nulls = FILTER langs BY lang != '';
 group_by_langs = GROUP langs_wo_nulls BY lang;
 langs_counts = FOREACH group_by_langs GENERATE group, COUNT($1) as frequency;
 langs_counts_desc = ORDER langs_counts BY frequency DESC;
 top_langs = LIMIT langs_counts_desc 20;
 
-top_langsB = FOREACH top_langs GENERATE 'langs', TOTUPLE($0,$1);
-top_langsC = FOREACH top_langsB GENERATE '$bucket:$app_id', TOBAG(expr)
-group_by_langs = GROUP top_langsC BY row_key;
-DESCRIBE group_by_langs
-DUMP group_by_langs;
+DUMP top_langs;
+
+STORE top_langs INTO 'event_metrics/$app_id/$bucket/top_langs';
+
+-- top_langsB = FOREACH top_langs GENERATE 'langs', TOTUPLE($0,$1);
+-- top_langsC = FOREACH top_langsB GENERATE '$bucket:$app_id', TOBAG()
+-- group_by_langs = GROUP top_langsC BY row_key;
+-- DESCRIBE group_by_langs
+-- DUMP group_by_langs;
 
 -- group_by_langs = GROUP langs_wo_nulls BY lang;
 -- langs_counts = FOREACH group_by_langs GENERATE group, COUNT($1) as frequency;

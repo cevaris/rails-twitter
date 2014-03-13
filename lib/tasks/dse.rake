@@ -22,8 +22,8 @@ namespace :dse do
         local_script_path: "#{Rails.root}/scripts/pig/#{args['script']}",
         jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar',
                '/Users/cevaris/Documents/workspace/pig/pig-dse/pig-dse.jar'],
-        execute: 'local',
-        # execute: 'mapreduce',
+        # execute: 'local',
+        execute: 'mapreduce',
         params: {
           input: 'cql://applications/events', 
           output: 'cql://applications/event_metrics',
@@ -33,6 +33,8 @@ namespace :dse do
       })
       puts rpig.inspect
       rpig.execute()
+
+      
       
     end
   
