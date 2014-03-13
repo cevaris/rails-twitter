@@ -2,6 +2,8 @@ require 'jobs'
 require 'rpig'
 require 'rhadoop'
 
+require 'json'
+
 namespace :dse do
 
   namespace :pig do
@@ -49,8 +51,6 @@ namespace :dse do
 
       # /user/vagrant/event_metrics/2/2014-03-06-03/top_langs/part-r-00000
       rhadoop = RHadoop.new({ 
-        # remote_file_path: "/user/vagrant/event_metrics/2/2014-03-06-03/top_langs/",
-        # remote_file_path: args['file'],
         bucket: '2014-03-06-03', 
         metric: 'top_langs',
         app_id: 2
@@ -58,8 +58,10 @@ namespace :dse do
       puts rhadoop.inspect
       rhadoop.execute()
 
-      
-      
+      rhadoop.scan_w_tab do |line|
+        puts "Result: #{line}"
+      end
+
     end
   end
 
