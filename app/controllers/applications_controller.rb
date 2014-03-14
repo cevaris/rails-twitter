@@ -1,5 +1,10 @@
 class ApplicationsController < ApplicationController
   before_action :set_application, only: [:show, :edit, :update, :destroy]
+  before_action :is_logged_in
+
+  def is_logged_in
+    redirect_to new_user_session_path if current_user.nil? 
+  end
 
   # GET /applications
   # GET /applications.json
@@ -26,8 +31,7 @@ class ApplicationsController < ApplicationController
   # POST /applications.json
   def create
     @application = Application.new(application_params)
-    @user = User.find(current_user.id)
-    @application.user = @user
+    @application.user = current_user
 
 
     respond_to do |format|
