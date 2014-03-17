@@ -17,10 +17,15 @@ events_sample = FILTER events BY (bucket == '$bucket' AND app_id == '$app_id');
 events_json = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
 
 
--- -- Number of events
--- group_all = GROUP events_sample ALL;
--- events_count  = FOREACH group_all GENERATE COUNT(events_sample);
--- DUMP events_count;
+samples = LIMIT events_json 100;
+
+-- Number of events
+group_all = GROUP samples ALL;
+events_count  = FOREACH group_all GENERATE COUNT(samples);
+DUMP events_count;
+rmf 'event_metrics/$app_id/$bucket/counts';
+STORE events_count INTO 'event_metrics/$app_id/$bucket/counts';
+
 
 -- group_all = GROUP events_sample BY (bucket, app_id);
 -- events_count   = FOREACH group_all GENERATE '$bucket:$app_id', TOBAG(TOTUPLE('count',(long)COUNT($1)));
@@ -31,9 +36,10 @@ events_json = FOREACH events_sample GENERATE FLATTEN(JsonToMap(event)) AS json;
 -- insert_format = FOREACH events_count GENERATE TOTUPLE(TOTUPLE('year',2011),TOTUPLE('state',State)),TOTUPLE(TotalFeet);
 -- STORE events_count INTO '$output?output_query=UPDATE%20applications.event_metrics%20SET%20count%20%3D%20%3F' USING CqlStorage;
 
-samples = LIMIT events_json 100;
+
 
 -- Languages
+-- langs = FOREACH events_json GENERATE json#'lang' AS lang;
 langs = FOREACH samples GENERATE json#'lang' AS lang;
 langs_wo_nulls = FILTER langs BY lang != '';
 group_by_langs = GROUP langs_wo_nulls BY lang;
@@ -42,7 +48,7 @@ langs_counts_desc = ORDER langs_counts BY frequency DESC;
 top_langs = LIMIT langs_counts_desc 20;
 
 DUMP top_langs;
-
+rmf 'event_metrics/$app_id/$bucket/top_langs';
 STORE top_langs INTO 'event_metrics/$app_id/$bucket/top_langs';
 
 -- top_langsB = FOREACH top_langs GENERATE 'langs', TOTUPLE($0,$1);
@@ -64,14 +70,16 @@ STORE top_langs INTO 'event_metrics/$app_id/$bucket/top_langs';
 
 
 
--- -- Tweets
+-- Tweets
 -- texts = FOREACH events_json GENERATE FLATTEN(json#'text') AS text;
--- group_by_text = GROUP texts BY text;
--- texts_freq = FOREACH group_by_text GENERATE group, COUNT($1) as frequency;
--- texts_freq_desc = ORDER texts_freq BY frequency DESC;
--- top_texts = LIMIT texts_freq_desc 20;
--- DUMP top_texts;
-
+texts = FOREACH samples GENERATE FLATTEN(json#'text') AS text;
+group_by_text = GROUP texts BY text;
+texts_freq = FOREACH group_by_text GENERATE group, COUNT($1) as frequency;
+texts_freq_desc = ORDER texts_freq BY frequency DESC;
+top_texts = LIMIT texts_freq_desc 20;
+DUMP top_texts;
+rmf 'event_metrics/$app_id/$bucket/top_texts';
+STORE top_texts INTO 'event_metrics/$app_id/$bucket/top_texts';
 
 
 
@@ -82,6 +90,7 @@ STORE top_langs INTO 'event_metrics/$app_id/$bucket/top_langs';
 -- -- Entities/User
 -- entities = FOREACH events_json GENERATE FLATTEN(json#'entities') AS entities;
 -- users    = FOREACH events_json GENERATE FLATTEN(json#'user') AS user;
+users    = FOREACH samples GENERATE FLATTEN(json#'user') AS user;
 
 
 
@@ -106,15 +115,16 @@ STORE top_langs INTO 'event_metrics/$app_id/$bucket/top_langs';
 
 
 
--- -- Locations
--- locations = FOREACH users GENERATE user#'location' AS location;
--- locations_wo_nulls = FILTER locations BY location != '';
--- group_by_location = GROUP  locations_wo_nulls BY location;
--- location_count = FOREACH group_by_location GENERATE group AS location, COUNT($1) AS frequency;
--- location_counts_desc = ORDER location_count BY $1 DESC;
--- top_locations = LIMIT location_counts_desc 20;
--- DUMP top_locations;
-
+-- Locations
+locations = FOREACH users GENERATE user#'location' AS location;
+locations_wo_nulls = FILTER locations BY location != '';
+group_by_location = GROUP  locations_wo_nulls BY location;
+location_count = FOREACH group_by_location GENERATE group, COUNT($1) AS frequency;
+location_counts_desc = ORDER location_count BY $1 DESC;
+top_locations = LIMIT location_counts_desc 20;
+DUMP top_locations;
+rmf 'event_metrics/$app_id/$bucket/top_locations';
+STORE top_locations INTO 'event_metrics/$app_id/$bucket/top_locations';
 
 
 
@@ -127,7 +137,7 @@ STORE top_langs INTO 'event_metrics/$app_id/$bucket/top_langs';
 --   GENERATE user#'screen_name' AS screen_name, user#'id' AS user_id;
 -- group_by_user_tuple = GROUP user_tuples BY (user_id, screen_name);
 -- user_tuples_freq = FOREACH group_by_user_tuple 
---   GENERATE group.user_id, group.screen_name, COUNT($1) as frequency;
+--   GENERATE group.screen_name, COUNT($1) as frequency;
 -- user_tuples_freq_desc = ORDER user_tuples_freq BY $1 DESC;
 -- top_user_tuples = LIMIT use-- top_user_tuples = LIMIT user_tuples_freq_desc 20;
 -- DUMP top_user_tuples;
@@ -161,7 +171,7 @@ STORE top_langs INTO 'event_metrics/$app_id/$bucket/top_langs';
 --   GENERATE user_mention#'screen_name' AS screen_name, user_mention#'id' AS user_id;
 -- group_by_user_mentions = GROUP user_mentions BY (user_id, screen_name);
 -- user_mentions_freq = FOREACH group_by_user_mentions 
---   GENERATE group.user_id, group.screen_name, COUNT($1) as frequency;
+--   GENERATE group.screen_name, COUNT($1) as frequency;
 -- user_mentions_freq_desc = ORDER user_mentions_freq BY $2 DESC;
 -- top_user_mentions = LIMIT user_mentions_freq_desc 20;
 -- DUMP top_user_mentions;

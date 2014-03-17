@@ -25,8 +25,8 @@ namespace :dse do
         local_script_path: "#{Rails.root}/scripts/pig/#{args['script']}",
         jars: ['/Users/cevaris/Documents/workspace/pig/pig-json/pig-json.jar',
                '/Users/cevaris/Documents/workspace/pig/pig-dse/pig-dse.jar'],
-        # execute: 'local',
-        execute: 'mapreduce',
+        execute: 'local',
+        # execute: 'mapreduce',
         params: {
           input: 'cql://applications/events', 
           output: 'cql://applications/event_metrics',
@@ -58,9 +58,20 @@ namespace :dse do
       puts rhadoop.inspect
       rhadoop.execute()
 
-      rhadoop.scan_w_tab do |line|
+      rhadoop.tab_scan do |line|
         puts "Result: #{line}"
       end
+
+      ###
+      rhadoop = RHadoop.new({ 
+        bucket: '2014-03-06-03', 
+        metric: 'counts',
+        app_id: 2
+      })
+      puts rhadoop.inspect
+      rhadoop.execute()
+
+      puts "Result: #{rhadoop.char_scan}"
 
     end
   end
