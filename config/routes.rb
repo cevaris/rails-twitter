@@ -1,5 +1,6 @@
 Rq::Application.routes.draw do
 
+  get '/applications/:id/bucket/:bucket', to: 'applications#show_bucket', as: 'show_bucket_application'
   resources :applications
 
   devise_for :users, :controllers => { :registrations => "registrations" }

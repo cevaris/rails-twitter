@@ -18,6 +18,13 @@ class ApplicationsController < ApplicationController
     @application = Application.find(params[:id])
   end
 
+  # GET /applications/1
+  # GET /applications/1.json
+  def show_bucket
+    @application = Application.find(params[:id])
+    @bucket = params[:bucket]
+  end
+
   # GET /applications/new
   def new
     @application = Application.new

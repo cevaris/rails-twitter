@@ -49,29 +49,85 @@ namespace :dse do
     # task :file, [:file] => :environment do |task, args|
     task :execute => :environment do
 
+
+      app_id = 2
+      bucket = '2014-03-06-03'
+
+      documents = {}
+      documents[:documents] = []
+      documents[:bucket]  = bucket
+      documents[:app_id]  = app_id
+
+
+
+
+
+
       # /user/vagrant/event_metrics/2/2014-03-06-03/top_langs/part-r-00000
+      rhadoop = RHadoop.new({
+        path: "event_metrics/#{app_id}/#{bucket}/top_langs"
+      })
+      puts rhadoop.inspect
+      rhadoop.execute()
+
+      document = {}
+      document[:data]  = []
+      document[:label] = "Top Languages"
+      document[:render] = 'table'
+      rhadoop.tab_scan do |line|
+        document[:data] << line
+      end
+      documents[:documents] << document
+
+
+
+
+
+
+      #### Map
       rhadoop = RHadoop.new({ 
         bucket: '2014-03-06-03', 
-        metric: 'top_langs',
+        metric: 'top_locations',
         app_id: 2
       })
       puts rhadoop.inspect
       rhadoop.execute()
 
+      document = {}
+      document[:data]  = []
+      document[:label] = 'Top Locations'
+      document[:render] = 'map'
       rhadoop.tab_scan do |line|
-        puts "Result: #{line}"
+        document[:data] << line[0]
       end
+      documents[:documents] << document
 
-      ###
+
+
+
+
+
+      #### Single Char
       rhadoop = RHadoop.new({ 
-        bucket: '2014-03-06-03', 
+        bucket: ' ', 
         metric: 'counts',
         app_id: 2
       })
       puts rhadoop.inspect
       rhadoop.execute()
 
-      puts "Result: #{rhadoop.char_scan}"
+      document = {}
+      document[:data]   = rhadoop.string_scan
+      document[:label]  = 'Total Tweets'
+      document[:render] = 'text'
+      documents[:documents] << document
+
+
+
+
+
+
+      puts "Document: #{JSON.pretty_generate(documents)}"
 
     end
   end

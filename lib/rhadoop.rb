@@ -3,6 +3,8 @@ class RHadoop
 
   def initialize(options={})
 
+
+    @command = 'cat'
     @username = 'vagrant'
     @host = '192.168.3.100'
     @execute = 'local'
@@ -14,6 +16,8 @@ class RHadoop
   end
 
   def check_preconditions()
+    @command.downcase!
+    
     fail "Username missing" if @username.nil?
   end
 
@@ -28,7 +32,9 @@ class RHadoop
   end
 
 
-  def hadoop_command()
+
+
+  def cat_command()
     # dse hadoop fs -cat /user/vagrant/event_metrics/2/2014-03-06-03/top_langs/part-r-00000
     # dse hadoop fs -cat <REMOTE_FILE_PATH>
     if @execute == 'local'
@@ -38,12 +44,32 @@ class RHadoop
     end
   end
 
+  def ls_command()
+    # dse hadoop fs -cat /user/vagrant/event_metrics/2/2014-03-06-03/top_langs/part-r-00000
+    # dse hadoop fs -cat <REMOTE_FILE_PATH>
+    if @execute == 'local'
+      "ls /home/#{@username}/event_metrics/#{@app_id}/#{@bucket}/#{@metric}/"
+    else
+      "dse hadoop fs -ls /user/#{@username}/event_metrics/#{@app_id}/#{@bucket}/#{@metric}/part-r-00000"
+    end
+  end
+
+
+
 
 
   def execute()
 
-    # Execute file 
-    command = hadoop_command()
+    case @command
+    when 'ls'
+      command = ls_command()
+    case 'cat'
+      command = cat_command()
+    end
+
+  end
+  
+    
     @response = send_command(command)
     puts @response
   end
@@ -54,11 +80,8 @@ class RHadoop
     end
   end
 
-  def char_scan
+  def string_scan
     @response
-    # @response.split("\n").each do |line|
-    #   yield line.split("\t")
-    # end
   end
 
 end 
