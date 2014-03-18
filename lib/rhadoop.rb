@@ -17,7 +17,7 @@ class RHadoop
 
   def check_preconditions()
     @command.downcase!
-    
+
     fail "Username missing" if @username.nil?
   end
 
@@ -38,9 +38,9 @@ class RHadoop
     # dse hadoop fs -cat /user/vagrant/event_metrics/2/2014-03-06-03/top_langs/part-r-00000
     # dse hadoop fs -cat <REMOTE_FILE_PATH>
     if @execute == 'local'
-      "cat /home/#{@username}/event_metrics/#{@app_id}/#{@bucket}/#{@metric}/part-r-00000"
+      "cat /home/#{@username}/#{@path}/part-r-00000"
     else
-      "dse hadoop fs -cat /user/#{@username}/event_metrics/#{@app_id}/#{@bucket}/#{@metric}/part-r-00000"
+      "dse hadoop fs -cat /user/#{@username}/#{@path}/part-r-00000"
     end
   end
 
@@ -48,9 +48,9 @@ class RHadoop
     # dse hadoop fs -cat /user/vagrant/event_metrics/2/2014-03-06-03/top_langs/part-r-00000
     # dse hadoop fs -cat <REMOTE_FILE_PATH>
     if @execute == 'local'
-      "ls /home/#{@username}/event_metrics/#{@app_id}/#{@bucket}/#{@metric}/"
+      "ls /home/#{@username}/#{@path}/part-r-00000"
     else
-      "dse hadoop fs -ls /user/#{@username}/event_metrics/#{@app_id}/#{@bucket}/#{@metric}/part-r-00000"
+      "dse hadoop fs -ls /user/#{@username}/#{@path}/part-r-00000"
     end
   end
 
@@ -60,18 +60,20 @@ class RHadoop
 
   def execute()
 
-    case @command
-    when 'ls'
-      command = ls_command()
-    case 'cat'
-      command = cat_command()
+    command = case @command
+      when 'ls' then ls_command()
+      when 'cat' then cat_command()
     end
 
-  end
-  
-    
     @response = send_command(command)
     puts @response
+  end
+
+
+  def scan
+    @response.split("\n").each do |line|
+      yield line
+    end
   end
 
   def tab_scan

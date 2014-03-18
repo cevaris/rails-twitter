@@ -85,10 +85,8 @@ namespace :dse do
 
 
       #### Map
-      rhadoop = RHadoop.new({ 
-        bucket: '2014-03-06-03', 
-        metric: 'top_locations',
-        app_id: 2
+      rhadoop = RHadoop.new({
+        path: "event_metrics/#{app_id}/#{bucket}/top_locations"
       })
       puts rhadoop.inspect
       rhadoop.execute()
@@ -108,10 +106,8 @@ namespace :dse do
 
 
       #### Single Char
-      rhadoop = RHadoop.new({ 
-        bucket: ' ', 
-        metric: 'counts',
-        app_id: 2
+      rhadoop = RHadoop.new({
+        path: "event_metrics/#{app_id}/#{bucket}/counts"
       })
       puts rhadoop.inspect
       rhadoop.execute()
@@ -122,6 +118,17 @@ namespace :dse do
       document[:render] = 'text'
       documents[:documents] << document
 
+
+
+      rhadoop = RHadoop.new({
+        command: 'ls',
+        path: "event_metrics/#{app_id}"
+      })
+      puts rhadoop.inspect
+      rhadoop.execute()
+      rhadoop.tab_scan do |line|
+        document[:data] << line[0]
+      end
 
 
 
