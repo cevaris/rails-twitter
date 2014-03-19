@@ -48,9 +48,9 @@ class RHadoop
     # dse hadoop fs -cat /user/vagrant/event_metrics/2/2014-03-06-03/top_langs/part-r-00000
     # dse hadoop fs -cat <REMOTE_FILE_PATH>
     if @execute == 'local'
-      "ls /home/#{@username}/#{@path}/part-r-00000"
+      "ls /home/#{@username}/#{@path}"
     else
-      "dse hadoop fs -ls /user/#{@username}/#{@path}/part-r-00000"
+      "dse hadoop fs -ls /user/#{@username}/#{@path}"
     end
   end
 

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  application_id: 1
+  bucket: MyString
+  data: MyText
+
+two:
+  application_id: 1
+  bucket: MyString
+  data: MyText

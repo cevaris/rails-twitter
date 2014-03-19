@@ -23,6 +23,8 @@ class ApplicationsController < ApplicationController
   def show_bucket
     @application = Application.find(params[:id])
     @bucket = params[:bucket]
+    @metric = Metric.find_by(application_id: @application.id, bucket: @bucket)
+    
   end
 
   # GET /applications/new

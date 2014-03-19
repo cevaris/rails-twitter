@@ -120,6 +120,8 @@ namespace :dse do
 
 
 
+
+
       rhadoop = RHadoop.new({
         command: 'ls',
         path: "event_metrics/#{app_id}"
@@ -130,10 +132,10 @@ namespace :dse do
         document[:data] << line[0]
       end
 
+      @metric = Metric.find_or_initialize_by(application_id: app_id, bucket: bucket, data: documents.to_json)
+      @metric.save
 
-
-
-
+      puts "Metrics: #{@metric.inspect}"
       puts "Document: #{JSON.pretty_generate(documents)}"
 
     end
