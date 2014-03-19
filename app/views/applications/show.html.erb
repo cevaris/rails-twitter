@@ -15,16 +15,17 @@
     <div class="span2">
       <ul class="nav nav-tabs nav-stacked">
         <% @application.metrics.each do |metric| %>
-        <li><%= link_to metric.bucket, show_bucket_application_path(metric.application_id, metric.bucket ) %></li>
+        <li><%= link_to metric.bucket, show_bucket_application_path(metric.application_id, metric.bucket) %></li>
         <% end %>
       </ul>
     </div>
     <div class="span10">
-      <hr/>
+
     </div>
   </div>
 
 </div>
+
 
 <%= link_to 'Edit', edit_application_path(@application) %> |
 <%= link_to 'Back', applications_path %>

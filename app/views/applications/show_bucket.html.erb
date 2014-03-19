@@ -1,0 +1,72 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @application.name %>
+  <br/>
+  <strong>Bucket:</strong>
+  <%= @bucket %>
+</p>
+
+
+
+<div class="span12" >
+
+
+  <div class="row" >
+    <div class="span12">
+
+      <hr/>
+
+      <div class="metrics">
+
+
+        
+      </div>
+
+      <hr/>
+
+
+    </div>
+  </div>
+
+</div>
+<%= link_to 'Edit', edit_application_path(@application) %> |
+<%= link_to 'Back', applications_path %>
+
+
+
+
+
+<hr/>
+
+
+'<%= @metric.data %>'
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var metrics = new Metrics({
+    container: ".metrics",
+    data: $.parseJSON(<%= raw @metric.data.to_json %>)
+  });
+  metrics.render();
+
+  
+
+});
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

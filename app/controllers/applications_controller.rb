@@ -24,6 +24,11 @@ class ApplicationsController < ApplicationController
     @application = Application.find(params[:id])
     @bucket = params[:bucket]
     @metric = Metric.find_by(application_id: @application.id, bucket: @bucket)
+
+    respond_to do |format|
+      format.html { render 'show_bucket' }
+      format.json { render action: 'show_bucket', location: @application }
+    end
     
   end
 
