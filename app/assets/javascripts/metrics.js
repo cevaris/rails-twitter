@@ -9,7 +9,7 @@ function Metrics( options ) {
   
 
   this.render = function () {
-    console.log("rendering");   
+    console.log("Rendering");   
 
     if (settings.data == undefined) {
       throw Error("Data object is null.");
@@ -43,12 +43,57 @@ function Metrics( options ) {
   };
 
   var renderMap = function (data) {
+
+    return false;
+    
     console.log("Rendering Map");
-    console.log(data);
+
+    if (data.data == undefined) {
+      throw Error("Data object is null.");
+    }
+
+    console.log(data.data);
+
+    var geocoder;
+    var map;
+   
+
+    geocoder = new google.maps.Geocoder();
+    var latlng = new google.maps.LatLng(-34.397, 150.644);
+    var mapOptions = {
+      zoom: 8,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    }
+    map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+
+    // data.data.forEach(function(element) {
+      var element = data.data[0];
+      geocoder.geocode( { 'address': element}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          console.log(results);
+          map.setCenter(results[0].geometry.location);
+          var marker = new google.maps.Marker({
+              map: map,
+              position: results[0].geometry.location
+          });
+        } else {
+          alert('Geocode was not successful for the following reason: ' + status);
+        }
+      });
+    // });
+
+    return this;
   };
-  var renderText = function (data) {
-    console.log("Rendering Text");
-    console.log(data);
+
+
+
+  var renderText = function (component) {
+     if (component.data == undefined) {
+      throw Error("Component data is null.");
+    }
+    console.log(component.data);
   };
   var renderTable = function (data) {
     console.log("Rendering Table");

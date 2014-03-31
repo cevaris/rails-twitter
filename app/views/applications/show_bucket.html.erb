@@ -21,6 +21,9 @@
       <div class="metrics">
 
 
+        <div id="map-canvas" style="height:90%;top:30px"></div>
+
+
         
       </div>
 
@@ -48,19 +51,10 @@ $(document).ready(function(){
   var metrics = new Metrics({
     container: ".metrics",
     data: $.parseJSON(<%= raw @metric.data.to_json %>)
-  });
-  metrics.render();
-
-  
-
+  }).render();
 });
 
 </script>
-
-
-
-
-
 
 
 
